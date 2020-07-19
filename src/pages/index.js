@@ -1,22 +1,41 @@
-import React from "react"
-import { Link } from "gatsby"
+import React from 'react';
+import { navigate } from 'gatsby';
+import { useAuth } from 'gatsby-theme-firebase';
 
-import Layout from "../components/layout"
-import Image from "../components/image"
-import SEO from "../components/seo"
+import Layout from '../components/layout';
+import SEO from '../components/seo';
+import { SocialLogins } from 'gatsby-theme-firebase';
 
-const IndexPage = () => (
-  <Layout>
-    <SEO title="Home" />
-    <h1>Hi people</h1>
-    <p>Welcome to your new Gatsby site.</p>
-    <p>Now go build something great.</p>
-    <div style={{ maxWidth: `300px`, marginBottom: `1.45rem` }}>
-      <Image />
-    </div>
-    <Link to="/page-2/">Go to page 2</Link> <br />
-    <Link to="/using-typescript/">Go to "Using TypeScript"</Link>
-  </Layout>
-)
+const IndexPage = () => {
+  const { isLoading, isLoggedIn, profile } = useAuth();
 
-export default IndexPage
+  return (
+    <Layout>
+      <SEO title="Home" />
+
+      {!isLoggedIn && (
+        <SocialLogins
+          onSuccess={(user) => {
+            console.log(user);
+            navigate('/');
+          }}
+        />
+      )}
+
+      {isLoading && <p>Loading..</p>}
+      {isLoggedIn && (
+        <>
+          <p>お名前: {profile.displayName}</p>
+          <p>最終ログイン日時: {profile.metadata.lastSignInTime}</p>
+          <p>
+            <img src={profile.photoURL} width="150" />
+          </p>
+        </>
+      )}
+
+      {console.log(profile)}
+    </Layout>
+  );
+};
+
+export default IndexPage;
