@@ -1,39 +1,31 @@
 import React from 'react';
-import { navigate } from 'gatsby';
+import { navigate, Link } from 'gatsby';
 import { useAuth } from 'gatsby-theme-firebase';
 
-import Layout from '../components/layout';
-import SEO from '../components/seo';
+import Layout from '../components/Layout';
+import LogoutButton from '../components/LogoutButton';
 import { SocialLogins } from 'gatsby-theme-firebase';
 
 const IndexPage = () => {
-  const { isLoading, isLoggedIn, profile } = useAuth();
+  const { isLoggedIn, profile } = useAuth();
 
   return (
     <Layout>
-      <SEO title="Home" />
-
       {!isLoggedIn && (
         <SocialLogins
           onSuccess={(user) => {
-            console.log(user);
-            navigate('/');
+            navigate(`/user/${user.user.uid}`);
           }}
         />
       )}
-
-      {isLoading && <p>Loading..</p>}
       {isLoggedIn && (
         <>
-          <p>お名前: {profile.displayName}</p>
-          <p>最終ログイン日時: {profile.metadata.lastSignInTime}</p>
-          <p>
-            <img src={profile.photoURL} width="150" />
-          </p>
+          <p>ログイン済みです</p>
+          {console.log(profile)}
+          <Link to={`/user/${profile.uid}`}>自分のページへ</Link>
+          <LogoutButton />
         </>
       )}
-
-      {console.log(profile)}
     </Layout>
   );
 };
